@@ -35,7 +35,7 @@ ui <- page_sidebar(
     ),
     dateRangeInput(
       inputId = "date_range",
-      label = "Select date range:",
+      label = "Select time range:",
       start = min(tidy_data$date),
       end = max(tidy_data$date)
     )
@@ -45,7 +45,7 @@ ui <- page_sidebar(
     tabPanel("Home",
              card(
                full_screen = FALSE,
-               card_header("About This Tool"),
+               card_header("About"),
                card_body(
                  tags$p("Welcome! This website can be used to view survey data from the Food Rescue Network."),
                  tags$p("Select options on the left to view the data.")
@@ -54,6 +54,11 @@ ui <- page_sidebar(
                full_screen = FALSE,
                card_header("Quick Stats"),
                htmlOutput("summary_table")
+             ),
+             card(
+               full_screen = FALSE,
+               card_header("Top 25 Recovered Foods"),
+               htmlOutput("top_table")
              )
              ),
     tabPanel("Recovery distribution",
@@ -61,12 +66,13 @@ ui <- page_sidebar(
                full_screen = FALSE,
                plotOutput("plot")
              ),
-             card(
-               full_screen = FALSE,
-               htmlOutput("type_table"))
-             ),
+             fluidRow(uiOutput("summary_ui"))),
     tabPanel("Over time"),
-    tabPanel("Data")
+    tabPanel("Data",
+             tableOutput("tidydata"),
+             downloadButton("downloaddata", "Download tidy survey data"),
+             tableOutput("cleandata"),
+             downloadButton("downloaddata2", "Download wide survey data"))
   )
 
 )
@@ -90,10 +96,25 @@ server <- function(input, output) {
     format(input$date_range[2], "%m-%d-%Y")
   })
 
+  output$summary_ui <- renderUI({
+    if (input$location == "All locations") {
+      fluidRow(
+        column(width = 6, card(htmlOutput("type_table"))),
+        column(width = 6, card(htmlOutput("hall_table"))))
+    } else {
+      fluidRow(
+        column(width = 12, card(htmlOutput("type_table"))))
+    }
+  })
 
   output$summary_table <- renderUI({
     table <- weekly_stats(clean_data, tidy_data, start_date(), end_date(), dining_names()) |>
       row_spec(0, background = "#48D1CC")
+    HTML(as.character(table))
+  })
+
+  output$top_table <- renderUI({
+    table <- recovery_tables(tidy_data, start_date(), end_date(), dining_halls, "top")
     HTML(as.character(table))
   })
 
@@ -115,6 +136,49 @@ server <- function(input, output) {
     }
     plot_recovery(tidy_data, start_date(), end_date(), dining_names(), fill = TRUE)
   })
+
+  data_subset <- reactive({
+    tidy_data |>
+      filter(dining_hall %in% dining_names()) |>
+      filter(date >= input$date_range[1]) |>
+      filter(date <= input$date_range[2])
+  })
+
+  data_subset2 <- reactive({
+    clean_data |>
+      filter(dining_hall %in% dining_names()) |>
+      filter(date >= input$date_range[1]) |>
+      filter(date <= input$date_range[2])
+  })
+
+  # Data section
+  output$tidydata <- renderTable({
+    export_data <- data_subset()
+    export_data$date <- format(export_data$date, "%m-%d-%Y")
+    head(export_data, n = 5)
+  })
+
+  output$downloaddata <- downloadHandler(
+    filename = function() {paste0("FRN_", input$location, ".csv")},
+    content = function(file) {
+      export_data <- data_subset()
+      export_data$date <- format(export_data$date, "%m-%d-%Y")
+      write.csv(export_data, file)}
+  )
+
+  output$cleandata <- renderTable({
+    export_data <- data_subset2()
+    export_data$date <- format(export_data$date, "%m-%d-%Y")
+    head(export_data, n = 5)
+  })
+
+  output$downloaddata2 <- downloadHandler(
+    filename = function() {paste0("FRN_", input$location, ".csv")},
+    content = function(file) {
+      export_data <- data_subset2()
+      export_data$date <- format(export_data$date, "%m-%d-%Y")
+      write.csv(export_data, file)}
+  )
 }
 
 # Run the application
