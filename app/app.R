@@ -12,6 +12,7 @@ library(tidyr)
 library(knitr)
 library(kableExtra)
 library(utils)
+library(plotly)
 
 # Data
 data(raw_food)
@@ -59,6 +60,11 @@ ui <- page_sidebar(
                full_screen = FALSE,
                card_header("Top 25 Recovered Foods"),
                htmlOutput("top_table")
+             ),
+             card(
+               full_screen = FALSE,
+               card_header("Bird's Eye View"),
+               plotlyOutput("birds_eye")
              )
              ),
     tabPanel("Recovery distribution",
@@ -111,6 +117,10 @@ server <- function(input, output) {
     table <- weekly_stats(clean_data, tidy_data, start_date(), end_date(), dining_names()) |>
       row_spec(0, background = "#48D1CC")
     HTML(as.character(table))
+  })
+
+  output$birds_eye <- renderPlotly({
+    birds_eye(tidy_data, start_date(), end_date(), dining_names())
   })
 
   output$top_table <- renderUI({
