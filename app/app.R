@@ -58,14 +58,15 @@ ui <- page_sidebar(
              ),
              card(
                full_screen = FALSE,
-               card_header("Top 25 Recovered Foods"),
-               htmlOutput("top_table")
+               card_header("Bird's Eye View"),
+               plotlyOutput("birds_eye")
              ),
              card(
                full_screen = FALSE,
-               card_header("Bird's Eye View"),
-               plotlyOutput("birds_eye")
+               card_header("Top 25 Recovered Foods"),
+               htmlOutput("top_table")
              )
+
              ),
     tabPanel("Recovery distribution",
              card(
