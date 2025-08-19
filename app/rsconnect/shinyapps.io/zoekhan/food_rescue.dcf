@@ -1,0 +1,12 @@
+name: food_rescue
+title: food_rescue
+username: zoekhan
+account: zoekhan
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15230138
+bundleId: 10793291
+url: https://zoekhan.shinyapps.io/food_rescue/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

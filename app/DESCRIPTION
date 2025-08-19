@@ -1,0 +1,21 @@
+Package: shinyfrn
+Type: Shiny
+Title: Food Rescue Network
+Version: 0.0.1
+Imports:
+    shiny,
+    bslib,
+    ggplot2,
+    dplyr,
+    forcats,
+    lubridate,
+    purrr,
+    stringr,
+    tidyr,
+    knitr,
+    kableExtra,
+    utils,
+    plotly,
+    foodrescue
+Remotes:
+    ZoeKhan1/foodrescue
