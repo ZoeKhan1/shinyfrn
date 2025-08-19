@@ -1,7 +1,6 @@
 # Load packages
 library(shiny)
 library(bslib)
-library(foodrescue)
 library(dplyr)
 library(ggplot2)
 library(forcats)
@@ -13,6 +12,7 @@ library(knitr)
 library(kableExtra)
 library(utils)
 library(plotly)
+library(foodrescue)
 
 # Data
 data(raw_food)
@@ -48,9 +48,31 @@ ui <- page_sidebar(
                full_screen = FALSE,
                card_header("About"),
                card_body(
-                 tags$p("Welcome! This website can be used to view survey data from the Food Rescue Network."),
-                 tags$p("Select options on the left to view the data.")
+                 tags$p("Welcome! This interactive website can be used to view survey data from the Food Rescue Network.
+                        We provide broad overviews as well as more detailed information on recovery distributions by food type, dining hall, and time scale.
+                        We hope this tool will be used by stakeholders at Smith such as dining staff, as well as anyone interested in the FRN.")
                )),
+
+             card(
+               full_screen = FALSE,
+               card_header("Data and acknowledgements"),
+               card_body(tags$p("Our data comes from our lovely FRN volunteers. At the end of every shift, volunteers fill out a Qualtrics survey and input their shift information.
+                         In the Spring 2025 we phased out having volunteers subtract 2lbs per container; we now perform this calculation on the back end."),
+                         tags$p("This app uses plotting functions in the",
+                                tags$a(href = "https://github.com/ZoeKhan1/foodrescue", "foodrescue", target = "_self"),
+                                " package, authored by Zoe Khan '27.
+                                The functions in this package build off of the Fall 2024 FRN report by Zoe and Anabel Fletcher '26."))
+             ),
+             card(
+               full_screen = FALSE,
+               card_header("Feedback"),
+               card_body(
+                 tags$p("Have a question or found a bug? Please ", HTML(' <a href = "https://github.com/ZoeKhan1/shinyfrn/issues" target = "_self" >report here</a>.'))
+               )
+             )
+
+             ),
+    tabPanel("Overview",
              card(
                full_screen = FALSE,
                card_header("Quick Stats"),
@@ -65,9 +87,7 @@ ui <- page_sidebar(
                full_screen = FALSE,
                card_header("Top 25 Recovered Foods"),
                htmlOutput("top_table")
-             )
-
-             ),
+             )),
     tabPanel("Recovery distribution",
              card(
                full_screen = FALSE,
