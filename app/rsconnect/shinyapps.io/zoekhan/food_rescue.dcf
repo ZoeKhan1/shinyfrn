@@ -5,7 +5,7 @@ account: zoekhan
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 15230138
-bundleId: 10793291
+bundleId: 10793413
 url: https://zoekhan.shinyapps.io/food_rescue/
 version: 1
 asMultiple: FALSE
